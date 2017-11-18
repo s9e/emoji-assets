@@ -1,0 +1,1 @@
+This repository is not open for external code contributions at the moment. If you have a suggestion that pertains exclusively to this repository, you can open a new issue to discuss it. If you have a suggestion or a pull request that pertains to the art, please direct it to the [Noto Emoji repository](https://github.com/googlei18n/noto-emoji).
