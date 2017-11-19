@@ -1,3 +1,6 @@
+[submodule "third_party/behdad/region-flags"]
+	path = third_party/behdad/region-flags
+	url = https://github.com/behdad/region-flags.git
 [submodule "third_party/googlei18n/noto-emoji"]
 	path = third_party/googlei18n/noto-emoji
 	url = https://github.com/googlei18n/noto-emoji.git
