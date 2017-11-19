@@ -1,6 +1,7 @@
 #/bin/bash
 
-SRC_DIR="third_party/googlei18n/noto-emoji"
+SRC_EMOJI_DIR="third_party/googlei18n/noto-emoji"
+SRC_FLAGS_DIR="third_party/behdad/region-flags"
 TRG_DIR="assets/noto"
 
 cd "$(dirname $(dirname $0))"
@@ -85,10 +86,10 @@ rm -rf "${TRG_DIR}/svg" "${TRG_DIR}/svgz"
 mkdir "${TRG_DIR}/svg" "${TRG_DIR}/svgz"
 
 echo "Copying text files..."
-cp "$SRC_DIR/AUTHORS" "$SRC_DIR/LICENSE" "$TRG_DIR"
+cp "$SRC_EMOJI_DIR/AUTHORS" "$SRC_EMOJI_DIR/LICENSE" "$TRG_DIR"
 
 echo "Copying flags..."
-for src_file in "$SRC_DIR/third_party/region-flags/svg/"*.svg;
+for src_file in "$SRC_FLAGS_DIR/svg/"*.svg;
 do
 	basename="$(basename $src_file)"
 	basename="${basename%.svg}"
@@ -108,7 +109,7 @@ echo "Clipping flags..."
 php scripts/clip.php "$TRG_DIR/svg"
 
 echo "Copying emoji..."
-for src_file in "$SRC_DIR/svg/"*.svg;
+for src_file in "$SRC_EMOJI_DIR/svg/"*.svg;
 do
 	trg_file="$TRG_DIR/svg/$(normalize $(basename $src_file))"
 
@@ -119,13 +120,25 @@ echo "Running SVGO..."
 third_party/node_modules/.bin/svgo -f "$TRG_DIR/svg" --multipass -q
 
 # https://github.com/svg/svgo/pull/790
+# https://github.com/svg/svgo/issues/842
 echo "Applying additional optimizations..."
 sed -i -e '
 	s|<title>.*</title>||;
 	s| overflow="visible"||g;
 	s|<defs>\(<path\) id="\([a-z]\+\)"\( d="[^"]\+"/>\)</defs>\(<clipPath id="[a-z]\+">\)<use xlink:href="#\2"/>\(</clipPath>\)|\4\1\3\5|g
+	s|a[0-9]\{12,\} [0-9]\{12,\}|a0 0|g
 	' \
 	"$TRG_DIR/svg/"*.svg
+
+echo "Creating SVGZ..."
+zopfli -i100 "$TRG_DIR/svg/"*.svg
+for src_file in "$TRG_DIR/svg/"*.gz;
+do
+	trg_file="$(basename $src_file)"
+	trg_file="${TRG_DIR}/svgz/${trg_file%.gz}z"
+
+	mv "$src_file" "$trg_file"
+done
 
 echo "Adding aliases..."
 while read line
@@ -138,19 +151,9 @@ do
 
 	if [ -n "$alias" ]
 	then
-		cp "$TRG_DIR/svg/$canonical.svg" "$TRG_DIR/svg/$alias.svg"
+		cp "$TRG_DIR/svgz/$canonical.svgz" "$TRG_DIR/svgz/$alias.svgz"
 	fi
-done < "$SRC_DIR/emoji_aliases.txt"
-
-echo "Creating SVGZ..."
-zopfli -i100 "$TRG_DIR/svg/"*.svg
-for src_file in "$TRG_DIR/svg/"*.gz;
-do
-	trg_file="$(basename $src_file)"
-	trg_file="${TRG_DIR}/svgz/${trg_file%.gz}z"
-
-	mv "$src_file" "$trg_file"
-done
+done < "$SRC_EMOJI_DIR/emoji_aliases.txt"
 
 echo "Removing SVG dir..."
 rm -rf "${TRG_DIR}/svg"
