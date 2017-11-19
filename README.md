@@ -13,7 +13,7 @@ Images in the `assets/noto` directory are derived from the [Noto Emoji](https://
 ## License
 
 Tools in the `scripts` directory are under the [MIT license](scripts/LICENSE).
-Image resources in the `assets/noto` directory are under the [Apache license, version 2.0](assets/noto/LICENSE) unless otherwise noted. See [assets/noto/AUTHORS](assets/noto/AUTHORS) for the list of authors. Flag images under third_party/behdad/region-flags are in the public domain or otherwise exempt from copyright ([more info](third_party/behdad/region-flags/LICENSE)).
+Image resources in the `assets/noto` directory are under the [Apache license, version 2.0](assets/noto/LICENSE) unless otherwise noted. See [assets/noto/AUTHORS](assets/noto/AUTHORS) for the list of authors. Flag images under third_party/behdad/region-flags are in the public domain or otherwise exempt from copyright ([more info](https://github.com/behdad/region-flags/blob/gh-pages/COPYING)).
 
 ## Differences from Noto Emoji
 
