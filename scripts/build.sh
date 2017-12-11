@@ -50,7 +50,7 @@ function translate_ris {
 
 function translate_ris_sub {
 	str="$1"
-	str="${1//-/}"
+	str="${str//-/}"
 	str="${str//A/-e0061}"
 	str="${str//B/-e0062}"
 	str="${str//C/-e0063}"
