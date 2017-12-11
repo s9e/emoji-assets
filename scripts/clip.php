@@ -7,50 +7,42 @@ function patchSVG($filepath)
 {
 	$dom = new DOMDocument;
 	$dom->load($filepath);
-
 	$svg = $dom->documentElement;
-	if ($svg->hasAttribute('viewBox'))
+
+	$attributes = [
+		'viewBox'           => '((?<x>-?[.\\d]+)[ ,](?<y>-?[.\\d]+) (?<w>[.\\d]+)[ ,](?<h>[.\\d]+))',
+		'enable-background' => '(new (?<x>-?[.\\d]+) (?<y>-?[.\\d]+) (?<w>[.\\d]+) (?<h>[.\\d]+))',
+		'width'             => '((?<w>[.\\d]+))',
+		'height'            => '((?<h>[.\\d]+))'
+	];
+
+	$values = [];
+	foreach ($attributes as $attrName => $regexp)
 	{
-		if (!preg_match('((-?[.\\d]+)[ ,](-?[.\\d]+) ([.\\d]+)[ ,]([.\\d]+))', $svg->getAttribute('viewBox'), $m))
+		if (!$svg->hasAttribute($attrName))
 		{
-			echo "Cannot parse viewBox in $filepath\n";
-
-			return;
+			continue;
 		}
-
-		$x      = $m[1];
-		$y      = $m[2];
-		$width  = $m[3];
-		$height = $m[4];
-	}
-	elseif ($svg->hasAttribute('enable-background'))
-	{
-		if (!preg_match('(new (-?[.\\d]+) (-?[.\\d]+) ([.\\d]+) ([.\\d]+))', $svg->getAttribute('enable-background'), $m))
+		if (!preg_match($regexp, $svg->getAttribute($attrName), $m))
 		{
-			echo "Cannot parse enable-background in $filepath\n";
+			echo "Cannot parse $attrName in $filepath\n";
 
-			return;
+			continue;
 		}
+		$values += $m;
+	}
 
-		$x      = $m[1];
-		$y      = $m[2];
-		$width  = $m[3];
-		$height = $m[4];
-	}
-	elseif ($svg->hasAttribute('width') && $svg->hasAttribute('height'))
-	{
-		$x      = 0;
-		$y      = 0;
-		$width  = $svg->getAttribute('width');
-		$height = $svg->getAttribute('height');
-	}
-	else
+	if (!isset($values['w'], $values['h']))
 	{
 		echo "Cannot parse dimensions in $filepath\n";
 
 		return;
 	}
 
+	$x      = (isset($values['x'])) ? $values['x'] : 0;
+	$y      = (isset($values['y'])) ? $values['y'] : 0;
+	$width  = $values['w'];
+	$height = $values['h'];
 	$radius = round($width * .1, 1);
 
 	$defs     = $svg->appendChild($dom->createElement('defs'));
