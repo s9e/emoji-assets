@@ -35,7 +35,7 @@ Images in the `assets/twemoji` directory are licensed under [CC-BY 4.0](assets/t
 
 - SVG content has been minified with SVGO.
 - SVG files have been compressed with zopfli to produce SVGZ files.
-- Filenames have been normalized to use 4- and 5- digits hex values, and exclude `200f` and `fe0f`. For instance, the image named `a9.svg` in Noto Emoji is available as `00a9.svgz` in this repository.
+- Filenames have been normalized to use 4- and 5- digits hex values, and exclude `200f` and `fe0f`. For instance, the image named `a9.svg` in Twitter Emoji is available as `00a9.svgz` in this repository.
 
 
 ## Contributions
