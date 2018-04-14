@@ -5,3 +5,7 @@
 [submodule "third_party/googlei18n/noto-emoji"]
 	path = third_party/googlei18n/noto-emoji
 	url = https://github.com/googlei18n/noto-emoji.git
+[submodule "twemoji"]
+	path = third_party/twitter/twemoji
+	url = https://github.com/twitter/twemoji.git
+	branch = gh-pages
