@@ -106,7 +106,7 @@ do
 done
 
 echo "Clipping flags..."
-php scripts/clip.php "$TRG_DIR/svg"
+php scripts/clip_noto.php "$TRG_DIR/svg"
 
 echo "Copying emoji..."
 for src_file in "$SRC_EMOJI_DIR/svg/"*.svg;
