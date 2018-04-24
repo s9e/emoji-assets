@@ -166,7 +166,4 @@ do
 	fi
 done < "$SRC_EMOJI_DIR/emoji_aliases.txt"
 
-echo "Removing SVG dir..."
-rm -rf "${TRG_DIR}/svg"
-
 echo "Done."

@@ -45,7 +45,4 @@ do
 	mv "$src_file" "$trg_file"
 done
 
-echo "Removing SVG dir..."
-rm -rf "${TRG_DIR}/svg"
-
 echo "Done."
