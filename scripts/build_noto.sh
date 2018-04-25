@@ -122,24 +122,7 @@ third_party/node_modules/.bin/svgo -f "$TRG_DIR/svg" --multipass -q
 # https://github.com/svg/svgo/pull/790
 # https://github.com/svg/svgo/issues/842
 echo "Applying additional optimizations..."
-sed -i \
-	-e '
-		s|<title>.*</title>||
-		s| xmlns:xlink="http://www.w3.org/1999/xlink"||
-		s| overflow="visible"||g
-		s|<defs>\(<[a-z]\+\) id="\([a-z]\+\)"\([^>]*/>\)</defs>\(<clipPath id="[a-z]\+">\)<use xlink:href="#\2"/>\(</clipPath>\)|\4\1\3\5|g
-		s|\(<svg[^>]\+\)>\(.*xlink:\)|\1 xmlns:xlink="http://www.w3.org/1999/xlink">\2|
-		s|a[0-9]\{12,\} [0-9]\{12,\}|a0 0|g
-
-		:expand_group
-		s|\(<path d="[^"]\+"\)\( clip-path="[^"]\+"\)\([^>]\+>\)|<g\2>\1\3</g>|g
-		s|\(<g clip-path="[^"]\+">\)\(\(<path [^>]\+>\)\+\)</g>\1\(<path [^>]\+>\)</g>|\1\2\4</g>|g
-		t expand_group
-
-		s|\(<g[^>]*>\)\(\(<path[^>]*>\)*\)</g>\1|\1\2|g
-		s|<g\( clip-path="[^"]\+"\)>\(<path d="[^"]\+"\)\([^>]\+>\)</g>|\2\1\3|g
-	' \
-	"$TRG_DIR/svg/"*.svg
+php scripts/optimize_svgs.php "$TRG_DIR/svg"
 
 echo "Creating SVGZ..."
 zopfli -i100 "$TRG_DIR/svg/"*.svg
