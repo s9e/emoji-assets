@@ -6,12 +6,17 @@ if (!isset($_SERVER['argv'][1]))
 }
 foreach (glob($_SERVER['argv'][1] . '/*.svg') as $filepath)
 {
-	file_put_contents($filepath, optimize(file_get_contents($filepath)));
+	$original  = file_get_contents($filepath);
+	$optimized = optimize($original);
+	if ($original !== $optimized)
+	{
+		file_put_contents($filepath, $optimized);
+	}
 }
 
 function optimize($svg)
 {
-	$svg = preg_replace('(<title>.*</title>)',                        '', $svg);
+	$svg = preg_replace('(<title>.*?</title>)',                       '', $svg);
 	$svg = str_replace(' xmlns:xlink="http://www.w3.org/1999/xlink"', '', $svg);
 	$svg = str_replace(' overflow="visible"',                         '', $svg);
 
@@ -24,6 +29,13 @@ function optimize($svg)
 		'$4$1$3$5',
 		$svg
 	);
+
+	// Remove paths that start at a negative position
+	// https://github.com/googlei18n/noto-emoji/issues/142
+	if (strpos($svg, 'viewBox') === false)
+	{
+		$svg = preg_replace('(<path d="M[0-9.]*-[0-9]{3}[^>]+/>)', '', $svg);
+	}
 
 	// Re-add the xlink namespace if necessary
 	if (strpos($svg, 'xlink:') !== false)
