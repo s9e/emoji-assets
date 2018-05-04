@@ -119,8 +119,6 @@ done
 echo "Running SVGO..."
 third_party/node_modules/.bin/svgo -f "$TRG_DIR/svg" --multipass -q
 
-# https://github.com/svg/svgo/pull/790
-# https://github.com/svg/svgo/issues/842
 echo "Applying additional optimizations..."
 php scripts/optimize_svgs.php "$TRG_DIR/svg"
 

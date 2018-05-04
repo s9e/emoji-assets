@@ -14,6 +14,7 @@ foreach (glob($_SERVER['argv'][1] . '/*.svg') as $filepath)
 	}
 }
 
+// TODO: moving all gradients that are not clipped to the top improves group merges
 function optimize($svg)
 {
 	$svg = preg_replace('(<title>.*?</title>)',                       '', $svg);
@@ -29,13 +30,6 @@ function optimize($svg)
 		'$4$1$3$5',
 		$svg
 	);
-
-	// Remove paths that start at a negative position
-	// https://github.com/googlei18n/noto-emoji/issues/142
-	if (strpos($svg, 'viewBox') === false)
-	{
-		$svg = preg_replace('(<path d="M[0-9.]*-[0-9]{3}[^>]+/>)', '', $svg);
-	}
 
 	// Re-add the xlink namespace if necessary
 	if (strpos($svg, 'xlink:') !== false)
