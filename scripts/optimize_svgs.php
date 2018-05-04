@@ -14,7 +14,6 @@ foreach (glob($_SERVER['argv'][1] . '/*.svg') as $filepath)
 	}
 }
 
-// TODO: moving all gradients that are not clipped to the top improves group merges
 function optimize($svg)
 {
 	$svg = preg_replace('(<title>.*?</title>)',                       '', $svg);
@@ -40,11 +39,8 @@ function optimize($svg)
 	// Wrap every element with a clip-path attribute into a group
 	$svg = preg_replace('((<[^>]*)( clip-path="[^"]+")([^>]*/>))', '<g$2>$1$3</g>', $svg);
 
-	// Merge consecutive groups
-	if (strpos($svg, '</g><g') !== false)
-	{
-		$svg = mergeGroups($svg);
-	}
+	// Perform DOM-based optimizations
+	$svg = optimizeDOM($svg);
 
 	// Remove groups with a single element
 	$svg = preg_replace('(<g( clip-path="[^"]+")>(<[^>]+)/></g>)', '$2$1/>', $svg);
@@ -68,13 +64,8 @@ function groupsMatch(DOMElement $g1, DOMElement $g2)
 	return getAttributes($g1) == getAttributes($g2);
 }
 
-function mergeGroups($svg)
+function mergeGroups(DOMDocument $dom)
 {
-	$dom = new DOMDocument;
-	if (!$dom->loadXML($svg))
-	{
-		die($svg);
-	}
 	foreach ($dom->getElementsByTagName('g') as $g)
 	{
 		while ($g->nextSibling instanceof DOMElement && groupsMatch($g, $g->nextSibling))
@@ -86,6 +77,41 @@ function mergeGroups($svg)
 			$g->parentNode->removeChild($g->nextSibling);
 		}
 	}
+}
+
+function moveUpNodes(DOMElement $root, $nodeName)
+{
+	$i = $root->childNodes->length;
+	while (--$i > 0)
+	{
+		$childNode = $root->childNodes[$i];
+		if ($childNode->nodeName === $nodeName)
+		{
+			$root->insertBefore($childNode, $root->firstChild);
+		}
+	}
+	foreach ($root->childNodes as $childNode)
+	{
+		if ($childNode instanceof DOMElement)
+		{
+			moveUpNodes($childNode, $nodeName);
+		}
+	}
+}
+
+function optimizeDOM($svg)
+{
+	$dom = new DOMDocument;
+	if (!$dom->loadXML($svg))
+	{
+		return $svg;
+	}
+
+	moveUpNodes($dom->documentElement, 'radialGradient');
+	moveUpNodes($dom->documentElement, 'linearGradient');
+	moveUpNodes($dom->documentElement, 'clipPath');
+	moveUpNodes($dom->documentElement, 'defs');
+	mergeGroups($dom);
 
 	return $dom->saveXML($dom->documentElement);
 }
