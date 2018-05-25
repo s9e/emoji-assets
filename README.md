@@ -1,6 +1,6 @@
 This repository experimentally provides a copy of the Noto Emoji and Twitter Emoji image sets, optimized for the web.
 
-![](https://cdn.jsdelivr.net/gh/s9e/emoji-assets/assets/noto/svgz/1f642.svgz)
+<img width="40" height="40" src="https://cdn.jsdelivr.net/gh/s9e/emoji-assets/assets/noto/svgz/1f642.svgz"> <img width="40" height="40" src="https://cdn.jsdelivr.net/gh/s9e/emoji-assets/assets/twemoji/svgz/1f642.svgz">
 
 
 ## How to build
